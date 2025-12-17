@@ -13,22 +13,20 @@
   <button id="logoutBtn">Déconnexion</button>
 </header>
 
-<main class="container">
-
+<main>
   <section id="loginSection">
     <h2>Connexion</h2>
-    <p>Connecte-toi avec Discord pour gérer ton bot.</p>
+    <p>Connecte-toi pour gérer ExoBot</p>
     <button onclick="loginWithDiscord()">Se connecter avec Discord</button>
   </section>
 
-  <section id="userSection" class="hidden">
-    <h2>👤 Ton compte</h2>
+  <section id="userSection" style="display:none">
     <div id="userInfo"></div>
-
-    <h2>🛠️ Serveurs gérés</h2>
+    <h3>Serveurs</h3>
     <ul id="guildList"></ul>
+    <br>
+    <button onclick="logout()">Déconnexion</button>
   </section>
-
 </main>
 
 <script src="script.js"></script>
