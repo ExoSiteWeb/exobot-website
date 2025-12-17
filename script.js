@@ -1,3 +1,6 @@
+const API_BASE = 'https://exobot-backend.onrender.com';
+
+
 // Animation d'entrée au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     // Animation des éléments du header
@@ -593,9 +596,6 @@ window.addEventListener('resize', function() {
         });
     }
 });
-
-// Dashboard authentication system
-const API_BASE = 'https://exobot-backend.onrender.com'; // Local development URL
 
 function handleDashboardAuth() {
     console.log('handleDashboardAuth called');
