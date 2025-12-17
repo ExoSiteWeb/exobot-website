@@ -1,234 +1,206 @@
-// Animation d'entrée au chargement de la page
-document.addEventListener('DOMContentLoaded', function() {
-    // Animation des éléments du header
-    const header = document.querySelector('header');
-    header.style.opacity = '0';
-    header.style.transform = 'translateY(-20px)';
-    setTimeout(() => {
-        header.style.transition = 'all 0.6s ease-out';
-        header.style.opacity = '1';
-        header.style.transform = 'translateY(0)';
-    }, 100);
+/**************************************************
+ * CONFIG
+ **************************************************/
+const API_BASE = 'https://exobot-backend.onrender.com';
 
-    // Animation des éléments flottants
-    const elements = document.querySelectorAll('.element');
-    elements.forEach((element, index) => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(50px) scale(0.8)';
-        setTimeout(() => {
-            element.style.transition = 'all 0.8s ease-out';
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0) scale(1)';
-        }, 300 + index * 200);
-    });
+/**************************************************
+ * ELEMENTS DOM
+ **************************************************/
+const loginSection = document.getElementById('loginSection');
+const dashboardSection = document.getElementById('userSection');
+const userInfo = document.getElementById('userInfo');
+const guildList = document.getElementById('guildList');
+const logoutBtn = document.getElementById('logoutBtn');
 
-    // Animation du texte du héros
-    const heroText = document.querySelector('.hero-content h1');
-    const heroParagraph = document.querySelector('.hero-content p');
-    const heroButtons = document.querySelector('.hero-buttons');
-
-    [heroText, heroParagraph, heroButtons].forEach((element, index) => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(30px)';
-        setTimeout(() => {
-            element.style.transition = 'all 0.6s ease-out';
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }, 600 + index * 200);
-    });
+/**************************************************
+ * INIT
+ **************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  handleAuthFlow();
 });
 
-// Gestion des onglets
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabPanes = document.querySelectorAll('.tab-pane');
+/**************************************************
+ * AUTH FLOW
+ **************************************************/
+function handleAuthFlow() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
 
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Retirer la classe active de tous les boutons
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        // Ajouter la classe active au bouton cliqué
-        button.classList.add('active');
-
-        // Cacher tous les panneaux
-        tabPanes.forEach(pane => pane.classList.remove('active'));
-
-        // Afficher le panneau correspondant
-        const tabId = button.getAttribute('data-tab');
-        const targetPane = document.getElementById(tabId);
-        targetPane.classList.add('active');
-    });
-});
-
-// Animation au défilement
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observer les sections pour l'animation au défilement
-const sections = document.querySelectorAll('.features, .docs, .help');
-sections.forEach(section => {
-    section.style.opacity = '0';
-    section.style.transform = 'translateY(50px)';
-    section.style.transition = 'all 0.6s ease-out';
-    observer.observe(section);
-});
-
-// Observer les éléments de fonctionnalité
-const featureItems = document.querySelectorAll('.feature-item');
-featureItems.forEach((item, index) => {
-    item.style.opacity = '0';
-    item.style.transform = 'translateY(30px)';
-    item.style.transition = 'all 0.6s ease-out';
-    item.style.transitionDelay = `${index * 0.1}s`;
-    observer.observe(item);
-});
-
-// Observer les éléments de docs et help
-const docsItems = document.querySelectorAll('.docs-info, .docs-buttons');
-docsItems.forEach((item, index) => {
-    item.style.opacity = '0';
-    item.style.transform = 'translateY(30px)';
-    item.style.transition = 'all 0.6s ease-out';
-    item.style.transitionDelay = `${index * 0.1}s`;
-    observer.observe(item);
-});
-
-const helpItems = document.querySelectorAll('.help-item');
-helpItems.forEach((item, index) => {
-    item.style.opacity = '0';
-    item.style.transform = 'translateY(30px)';
-    item.style.transition = 'all 0.6s ease-out';
-    item.style.transitionDelay = `${index * 0.1}s`;
-    observer.observe(item);
-});
-
-// Navigation fluide
-const navLinks = document.querySelectorAll('a[href^="#"]');
-navLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-
-        if (targetSection) {
-            const offsetTop = targetSection.offsetTop - 70; // Ajustement pour le header fixe
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Effet de survol pour les boutons d'invitation
-const inviteButtons = document.querySelectorAll('.invite-btn');
-inviteButtons.forEach(button => {
-    button.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-2px) scale(1.05)';
-    });
-
-    button.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
-});
-
-// Animation des éléments flottants continus
-function animateFloatingElements() {
-    const elements = document.querySelectorAll('.element');
-    elements.forEach((element, index) => {
-        const delay = index * 2000; // Délai différent pour chaque élément
-        setTimeout(() => {
-            element.style.animation = 'floatElement 6s ease-in-out infinite';
-        }, delay);
-    });
+  if (code) {
+    exchangeCodeForToken(code);
+  } else {
+    checkExistingSession();
+  }
 }
 
-animateFloatingElements();
+async function exchangeCodeForToken(code) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/callback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code })
+    });
 
-// Effet de particules en arrière-plan (optionnel)
-function createParticles() {
-    const heroSection = document.querySelector('.hero');
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        heroSection.appendChild(particle);
-    }
+    if (!res.ok) throw new Error();
+
+    // Nettoyer l'URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    checkExistingSession();
+  } catch {
+    showLogin();
+  }
 }
 
-// Ajouter des styles CSS pour les particules
-const particleStyles = `
-.particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: particleFloat linear infinite;
+async function checkExistingSession() {
+  try {
+    const res = await fetch(`${API_BASE}/api/me`, {
+      credentials: 'include'
+    });
+
+    if (!res.ok) throw new Error();
+
+    const user = await res.json();
+    showDashboard(user);
+  } catch {
+    showLogin();
+  }
 }
 
-@keyframes particleFloat {
-    0% {
-        transform: translateY(0px) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-`;
-
-// Injecter les styles des particules
-const styleSheet = document.createElement('style');
-styleSheet.textContent = particleStyles;
-document.head.appendChild(styleSheet);
-
-// Créer les particules après un court délai
-setTimeout(createParticles, 1000);
-
-// Gestion du menu mobile (si nécessaire à l'avenir)
-function toggleMobileMenu() {
-    const navMenu = document.querySelector('.nav-menu');
-    navMenu.classList.toggle('active');
+/**************************************************
+ * UI STATES
+ **************************************************/
+function showLogin() {
+  loginSection.classList.remove('hidden');
+  dashboardSection.classList.add('hidden');
 }
 
-// Écouter les changements de taille d'écran pour ajuster les animations
-window.addEventListener('resize', function() {
-    // Réinitialiser les animations si nécessaire
-    if (window.innerWidth <= 768) {
-        // Ajustements pour mobile
-        const elements = document.querySelectorAll('.element');
-        elements.forEach(element => {
-            element.style.width = '60px';
-            element.style.height = '60px';
-        });
-    } else {
-        // Ajustements pour desktop
-        const elements = document.querySelectorAll('.element');
-        elements.forEach(element => {
-            element.style.width = '80px';
-            element.style.height = '80px';
-        });
+function showDashboard(user) {
+  loginSection.classList.add('hidden');
+  dashboardSection.classList.remove('hidden');
+
+  renderUser(user);
+  loadGuilds();
+}
+
+/**************************************************
+ * USER
+ **************************************************/
+function renderUser(user) {
+  const avatar = user.avatar
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+    : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+  userInfo.innerHTML = `
+    <div class="user-card">
+      <img src="${avatar}" width="80" alt="Avatar">
+      <div>
+        <strong>${user.username}</strong>
+        <p>#${user.discriminator ?? '0000'}</p>
+      </div>
+    </div>
+  `;
+}
+
+/**************************************************
+ * GUILDS
+ **************************************************/
+async function loadGuilds() {
+  try {
+    const res = await fetch(`${API_BASE}/api/guilds`, {
+      credentials: 'include'
+    });
+
+    if (!res.ok) throw new Error();
+
+    const guilds = await res.json();
+    renderGuilds(guilds);
+  } catch {
+    guildList.innerHTML = '<li>Impossible de charger les serveurs</li>';
+  }
+}
+
+function renderGuilds(guilds) {
+  guildList.innerHTML = '';
+
+  if (!guilds.length) {
+    guildList.innerHTML = '<li>Aucun serveur gérable</li>';
+    return;
+  }
+
+  guilds.forEach(guild => {
+    const li = document.createElement('li');
+    li.className = 'guild-item';
+    li.innerHTML = `
+      <strong>${guild.name}</strong>
+      <button onclick="openGuildSettings('${guild.id}', '${guild.name}')">
+        Gérer
+      </button>
+    `;
+    guildList.appendChild(li);
+  });
+}
+
+/**************************************************
+ * SETTINGS
+ **************************************************/
+async function openGuildSettings(guildId, guildName) {
+  const settings = await getSettings(guildId);
+
+  const antiSpam = settings.moderation?.antiSpam ?? false;
+
+  const html = `
+    <h3>${guildName}</h3>
+    <label>
+      <input type="checkbox" id="antiSpamToggle" ${antiSpam ? 'checked' : ''}>
+      Anti-spam
+    </label>
+    <br><br>
+    <button onclick="saveGuildSettings('${guildId}')">Sauvegarder</button>
+  `;
+
+  guildList.innerHTML = `<li>${html}</li>`;
+}
+
+async function getSettings(guildId) {
+  try {
+    const res = await fetch(`${API_BASE}/api/settings/${guildId}`, {
+      credentials: 'include'
+    });
+    return await res.json();
+  } catch {
+    return {};
+  }
+}
+
+async function saveGuildSettings(guildId) {
+  const antiSpam = document.getElementById('antiSpamToggle').checked;
+
+  const settings = {
+    moderation: {
+      antiSpam
     }
+  };
+
+  await fetch(`${API_BASE}/api/settings/${guildId}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings)
+  });
+
+  alert('Paramètres sauvegardés');
+  loadGuilds();
+}
+
+/**************************************************
+ * LOGOUT
+ **************************************************/
+logoutBtn.addEventListener('click', async () => {
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+
+  location.reload();
 });
