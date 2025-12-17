@@ -595,7 +595,7 @@ window.addEventListener('resize', function() {
 });
 
 // Dashboard authentication system
-const API_BASE = 'http://localhost:3001'; // Local development URL
+const API_BASE = 'https://exobot-backend.onrender.com'; // Local development URL
 
 function handleDashboardAuth() {
     console.log('handleDashboardAuth called');
