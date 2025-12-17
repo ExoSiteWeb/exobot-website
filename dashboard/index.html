@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>ExoBot Dashboard</title>
+
+  <link rel="icon" href="../favicon.png">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Dashboard CSS -->
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body class="dashboard-page">
+
+<header class="dashboard-nav">
+  <div class="nav-left">
+    <i class="fas fa-robot"></i>
+    <span>ExoBot</span>
+  </div>
+
+  <button id="logoutBtn" class="btn ghost">Déconnexion</button>
+</header>
+
+<main class="dashboard-container">
+
+  <!-- LOGIN -->
+  <section id="loginSection" class="card center">
+    <h1>Dashboard ExoBot</h1>
+    <p>Connecte-toi pour gérer ton bot.</p>
+
+    <button class="btn primary" onclick="loginWithDiscord()">
+      <i class="fab fa-discord"></i>
+      Se connecter avec Discord
+    </button>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="userSection" class="hidden">
+    <div id="userInfo" class="user-card"></div>
+
+    <h2 class="section-title">Tes serveurs</h2>
+    <div id="guildList" class="guild-grid"></div>
+  </section>
+
+</main>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

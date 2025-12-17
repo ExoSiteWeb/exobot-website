@@ -1,0 +1,126 @@
+:root {
+  --bg: #0b1020;
+  --bg-dark: #020617;
+  --card: #0f172a;
+  --border: #1e293b;
+  --primary: #5865F2;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dashboard-page {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top, #111827, #020617);
+  color: var(--text);
+}
+
+/* NAV */
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(2, 6, 23, 0.9);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.nav-left i {
+  color: var(--primary);
+}
+
+/* MAIN */
+.dashboard-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 24px;
+}
+
+/* BUTTONS */
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #5865F2, #4752C4);
+  color: white;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* CARDS */
+.card {
+  background: linear-gradient(180deg, #020617, #020617aa);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  box-shadow: 0 30px 60px rgba(0,0,0,.5);
+}
+
+.center {
+  max-width: 480px;
+  margin: auto;
+  text-align: center;
+}
+
+/* USER */
+.user-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+/* GUILDS */
+.guild-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.guild-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.guild-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.5);
+}
+
+/* UTILS */
+.hidden {
+  display: none;
+}
