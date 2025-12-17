@@ -1,22 +1,20 @@
-import express from 'express';
-import session from 'express-session';
-import fetch from 'node-fetch';
-import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const session = require('express-session');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// 🔗 TON SITE (NE CHANGE RIEN)
+/* ================= CONFIG ================= */
+
 const FRONTEND_ORIGIN = 'https://exositeweb.github.io';
-const DASHBOARD_PATH = '/exobot-website/dashboard.html';
-const REDIRECT_URI = FRONTEND_ORIGIN + DASHBOARD_PATH;
+const REDIRECT_URI = 'https://exositeweb.github.io/exobot-website/dashboard.html';
+const DISCORD_API = 'https://discord.com/api/v10';
 
-const DISCORD_API = 'https://discord.com/api';
+/* ================= MIDDLEWARE ================= */
 
-// ===== MIDDLEWARES =====
 app.use(express.json());
 
 app.use(cors({
@@ -31,18 +29,21 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: true,
-    sameSite: 'none'
+    sameSite: 'none',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
 function requireAuth(req, res, next) {
-  if (!req.session.user) {
+  if (!req.session.discord_token) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   next();
 }
 
-// ===== AUTH DISCORD =====
+/* ================= AUTH ================= */
+
 app.get('/auth/discord', (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
@@ -52,79 +53,64 @@ app.get('/auth/discord', (req, res) => {
   });
 
   res.json({
-    authUrl: `${DISCORD_API}/oauth2/authorize?${params.toString()}`
+    authUrl: `https://discord.com/oauth2/authorize?${params.toString()}`
   });
 });
 
 app.post('/auth/callback', async (req, res) => {
-  const { code } = req.body;
-
   try {
-    const tokenRes = await fetch(`${DISCORD_API}/oauth2/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: 'No code' });
+
+    const tokenRes = await axios.post(
+      'https://discord.com/api/oauth2/token',
+      new URLSearchParams({
         client_id: process.env.DISCORD_CLIENT_ID,
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code,
         redirect_uri: REDIRECT_URI
-      })
-    });
+      }),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    );
 
-    const token = await tokenRes.json();
-    if (!token.access_token) {
-      return res.status(400).json({ success: false });
-    }
+    const token = tokenRes.data;
 
-    const userRes = await fetch(`${DISCORD_API}/users/@me`, {
+    const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
       headers: { Authorization: `Bearer ${token.access_token}` }
     });
 
-    const user = await userRes.json();
+    req.session.discord_token = token.access_token;
+    req.session.discord_user = userRes.data;
 
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      discriminator: user.discriminator,
-      avatar: user.avatar,
-      accessToken: token.access_token
-    };
+    res.json({ success: true, user: userRes.data });
 
-    res.json({ success: true, user: req.session.user });
   } catch (err) {
-    res.status(500).json({ success: false });
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ error: 'OAuth failed' });
   }
+});
+
+/* ================= API ================= */
+
+app.get('/api/user', requireAuth, (req, res) => {
+  res.json(req.session.discord_user);
+});
+
+app.get('/api/guilds', requireAuth, async (req, res) => {
+  const r = await axios.get(`${DISCORD_API}/users/@me/guilds`, {
+    headers: { Authorization: `Bearer ${req.session.discord_token}` }
+  });
+
+  res.json(r.data);
 });
 
 app.post('/auth/logout', (req, res) => {
   req.session.destroy(() => res.json({ success: true }));
 });
 
-// ===== API =====
-app.get('/api/user', requireAuth, (req, res) => {
-  res.json(req.session.user);
-});
-
-app.get('/api/guilds', requireAuth, async (req, res) => {
-  const r = await fetch(`${DISCORD_API}/users/@me/guilds`, {
-    headers: { Authorization: `Bearer ${req.session.user.accessToken}` }
-  });
-  res.json(await r.json());
-});
-
-// ===== SETTINGS (simple mais fiable) =====
-const SETTINGS = {};
-
-app.get('/api/settings/:guildId', requireAuth, (req, res) => {
-  res.json(SETTINGS[req.params.guildId] || {});
-});
-
-app.post('/api/settings/:guildId', requireAuth, (req, res) => {
-  SETTINGS[req.params.guildId] = req.body;
-  res.json({ success: true });
-});
+/* ================= START ================= */
 
 app.listen(PORT, () => {
-  console.log('ExoBot backend prêt sur le port', PORT);
+  console.log(`🚀 ExoBot backend running on port ${PORT}`);
 });
