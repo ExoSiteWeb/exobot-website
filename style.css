@@ -2,6 +2,7 @@
   --bg: #0f172a;
   --bg-dark: #020617;
   --card: #020617;
+  --border: #1e293b;
   --primary: #5865F2;
   --text: #e5e7eb;
   --muted: #94a3b8;
@@ -13,79 +14,121 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
-/* HEADER */
-header {
+/* NAV */
+.nav {
   background: var(--bg-dark);
-  padding: 16px 30px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--border);
 }
 
-header h1 {
-  margin: 0;
-  font-size: 1.3rem;
+.nav-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
-/* MAIN */
-main {
-  max-width: 1000px;
-  margin: auto;
-  padding: 40px 20px;
+.logo i {
+  color: var(--primary);
 }
 
-/* BUTTON */
-button {
-  background: var(--primary);
-  color: white;
+/* MAIN */
+.dashboard {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 24px;
+}
+
+/* BUTTONS */
+.btn {
   border: none;
+  border-radius: 10px;
   padding: 12px 18px;
-  border-radius: 8px;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: transform .15s ease, opacity .15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-button:hover {
+.btn.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
 }
 
-/* CARDS */
-#loginSection,
-#userSection {
+/* CARD */
+.card {
   background: var(--card);
-  border-radius: 12px;
-  padding: 30px;
-  margin-top: 30px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+}
+
+.center {
+  text-align: center;
+  max-width: 480px;
+  margin: auto;
 }
 
 /* USER */
-#userInfo {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
+.user-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+/* SECTIONS */
+.section-title {
+  margin-bottom: 20px;
 }
 
 /* GUILDS */
-#guildList {
-  list-style: none;
-  padding: 0;
+.guild-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 15px;
+  gap: 20px;
 }
 
-#guildList li {
-  background: #020617;
-  border-radius: 10px;
-  padding: 15px;
+.guild {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
   text-align: center;
-  border: 1px solid #1e293b;
+  transition: transform .15s ease, border .15s ease;
+}
+
+.guild:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+/* UTILS */
+.hidden {
+  display: none;
 }

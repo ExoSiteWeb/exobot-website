@@ -1,32 +1,54 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>ExoBot Dashboard</title>
-  <link rel="icon" href="favicon.png" />
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.png">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="topbar">
-  <h1>🤖 ExoBot Dashboard</h1>
-  <button id="logoutBtn">Déconnexion</button>
+<header class="nav">
+  <div class="nav-container">
+    <div class="logo">
+      <i class="fas fa-robot"></i>
+      <span>ExoBot</span>
+    </div>
+    <div class="nav-right">
+      <button id="logoutBtn" class="btn ghost">Déconnexion</button>
+    </div>
+  </div>
 </header>
 
-<main>
-  <section id="loginSection">
-    <h2>Connexion</h2>
-    <p>Connecte-toi pour gérer ExoBot</p>
-    <button onclick="loginWithDiscord()">Se connecter avec Discord</button>
+<main class="dashboard">
+
+  <!-- LOGIN -->
+  <section id="loginSection" class="card center">
+    <h1>Dashboard ExoBot</h1>
+    <p>Gère ton bot Discord simplement.</p>
+    <button class="btn primary" onclick="loginWithDiscord()">
+      <i class="fab fa-discord"></i> Se connecter avec Discord
+    </button>
   </section>
 
-  <section id="userSection" style="display:none">
-    <div id="userInfo"></div>
-    <h3>Serveurs</h3>
-    <ul id="guildList"></ul>
-    <br>
-    <button onclick="logout()">Déconnexion</button>
+  <!-- DASHBOARD -->
+  <section id="userSection" class="hidden">
+    <div class="user-card">
+      <div id="userInfo"></div>
+    </div>
+
+    <h2 class="section-title">Tes serveurs</h2>
+    <div id="guildList" class="guild-grid"></div>
   </section>
+
 </main>
 
 <script src="script.js"></script>
